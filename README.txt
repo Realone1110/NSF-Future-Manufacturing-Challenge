@@ -86,9 +86,8 @@ Use of generative AI
 
 Parts of this project, including code drafting, debugging, diagnostic experiments, the report, and the presentation slides, were developed with help from an AI coding assistant (Claude, by Anthropic), under our direction and review. All modeling decisions, including kernel choice, feature selection, and interpretation of results, were made and validated by the team.
 
-[This is a starting draft. Please edit it so it accurately reflects how AI tools were used across the project, since the rubric specifically asks for this disclosure.]
 
 Contact
 -------
 
-[Add a team contact name and email here in case the judges have questions.]
+Team lead: rolabiyi@asu.edu
