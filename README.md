@@ -139,8 +139,6 @@ If you change any code in `scripts/` or `src/` while a notebook's kernel is runn
 
 Parts of this project, including code drafting, debugging, diagnostic experiments, the LaTeX report, and the presentation slides, were developed with help from an AI coding assistant (Claude, by Anthropic), under our direction and review. All modeling decisions, including kernel choice, feature selection, and the interpretation of results, were made and validated by the team.
 
-This section is a starting draft. Please edit it so it accurately reflects how AI tools were used across the project, since the challenge rubric specifically asks for this disclosure.
-
 ## Citation
 
 If referencing the dataset or the organizer's starter material outside of this challenge, cite the dataset paper and the Zenodo record.
