@@ -19,13 +19,39 @@ HEIGHT_CMAP = 'jet'
 HEIGHTMAP_RANGES_UM = {8: (-50, 125), 10: (-45, 110), 14: (-45, 70), 21: (-30, 45)}
 DEFAULT_HEIGHT_WINDOW_MM = 400 * THERMAL_PIXEL_SIZE_MM  # 5.6 mm, matches thermal FOV
 
+# Base directories for the per-track .npy files. Every load in this module
+# goes through _thermal_path/_height_path below rather than a bare relative
+# path, since thermal and height data can live in two different folders
+# (they no longer sit next to the notebook the way they used to). Set these
+# from the notebook right after importing this module, e.g.:
+#
+#   import frame_extraction
+#   frame_extraction.THERMAL_BASE_DIR = str(THERMAL_DIR)
+#   frame_extraction.HEIGHT_BASE_DIR = str(HEIGHT_DIR)
+#
+# assuming the actual files sit at THERMAL_DIR/Track_8/Track_8_x_mm_center.npy
+# and HEIGHT_DIR/Track_8/Track_8_height_x_mm.npy respectively. If your real
+# folder structure differs (e.g. no per-track subfolder, or a different
+# nesting), adjust _thermal_path/_height_path below to match, this is the
+# one place that needs to agree with wherever the files actually are.
+THERMAL_BASE_DIR = "."
+HEIGHT_BASE_DIR = "."
+
+
+def _thermal_path(track_id, filename):
+    return f"{THERMAL_BASE_DIR}/{track_id}/{filename}"
+
+
+def _height_path(track_id, filename):
+    return f"{HEIGHT_BASE_DIR}/{track_id}/{filename}"
+
 
 def _shift_columns(frame, shift_px, order=1, mode='nearest'):
     return nd_shift(frame, shift=(0.0, shift_px), order=order, mode=mode)
 
 def get_thermal_frame(x_value, track_id="Track_8", display=False, tol=1e-6, restore_shape=True):
-    x_loc = np.load(f"{track_id}/{track_id}_x_mm_center.npy")
-    thermal_frames = np.load(f"{track_id}/{track_id}_thermal_frames.npy")
+    x_loc = np.load(_thermal_path(track_id, f"{track_id}_x_mm_center.npy"))
+    thermal_frames = np.load(_thermal_path(track_id, f"{track_id}_thermal_frames.npy"))
 
     if x_value < x_loc.min() or x_value > x_loc.max():
         raise ValueError(
@@ -101,9 +127,9 @@ def get_thermal_frame_rigid(x_value, track_id="Track_8", display=False):
     SEM_TILE_WIDTH_MM = 6.41
     SELECTED_SLOPE_EFF = {10: 0.003562, 14: -0.002517, 21: -0.002448}
     SELECTED_STRENGTH = {10: 1.00, 14: 0.75, 21: 1.00}
-    
-    x_loc = np.load(f"{track_id}/{track_id}_x_mm_center.npy")
-    thermal_frames = np.load(f"{track_id}/{track_id}_thermal_frames.npy")
+
+    x_loc = np.load(_thermal_path(track_id, f"{track_id}_x_mm_center.npy"))
+    thermal_frames = np.load(_thermal_path(track_id, f"{track_id}_thermal_frames.npy"))
 
     idx = np.argmin(np.abs(x_loc - x_value))
     x = x_loc[idx]
@@ -127,9 +153,9 @@ def get_thermal_frame_rigid(x_value, track_id="Track_8", display=False):
 
 def plot_full_heightmap(track_id="Track_8", save_path=None, dpi=400,
                          figsize=(12.5, 4.1)):
-    x = np.load(f"{track_id}/{track_id}_height_x_mm.npy")
-    y = np.load(f"{track_id}/{track_id}_height_y_mm.npy")
-    Z = np.load(f"{track_id}/{track_id}_height_detrended.npy")
+    x = np.load(_height_path(track_id, f"{track_id}_height_x_mm.npy"))
+    y = np.load(_height_path(track_id, f"{track_id}_height_y_mm.npy"))
+    Z = np.load(_height_path(track_id, f"{track_id}_height_detrended.npy"))
 
     id_num = int(''.join(ch for ch in track_id if ch.isdigit()))
     vmin_um, vmax_um = HEIGHTMAP_RANGES_UM.get(id_num, (None, None))
@@ -161,9 +187,9 @@ def get_height_slice(x_value, track_id="Track_8", window_mm=DEFAULT_HEIGHT_WINDO
     mode="1d" pulls the single nearest column at x_value and returns it as a
     1D height vs y profile.
     """
-    x = np.load(f"{track_id}/{track_id}_height_x_mm.npy")
-    y = np.load(f"{track_id}/{track_id}_height_y_mm.npy")
-    Z = np.load(f"{track_id}/{track_id}_height_detrended.npy")
+    x = np.load(_height_path(track_id, f"{track_id}_height_x_mm.npy"))
+    y = np.load(_height_path(track_id, f"{track_id}_height_y_mm.npy"))
+    Z = np.load(_height_path(track_id, f"{track_id}_height_detrended.npy"))
 
     if x_value < x.min() or x_value > x.max():
         raise ValueError(
@@ -294,9 +320,9 @@ def get_local_width_distribution(track_id="Track_8", x_value=55.0, window_mm=DEF
     centered at x_value, using the valid-run boundary method. Returns the
     raw per-column measurements plus summary statistics.
     """
-    x = np.load(f"{track_id}/{track_id}_height_x_mm.npy")
-    y = np.load(f"{track_id}/{track_id}_height_y_mm.npy")
-    Z = np.load(f"{track_id}/{track_id}_height_detrended.npy")
+    x = np.load(_height_path(track_id, f"{track_id}_height_x_mm.npy"))
+    y = np.load(_height_path(track_id, f"{track_id}_height_y_mm.npy"))
+    Z = np.load(_height_path(track_id, f"{track_id}_height_detrended.npy"))
 
     half = window_mm / 2.0
     lo, hi = max(x_value - half, x.min()), min(x_value + half, x.max())
@@ -349,9 +375,9 @@ def get_local_width_distribution_std(track_id="Track_8", x_value=55.0, window_mm
     reflects how precisely the mean width is known rather than how much
     width varies column to column.
     """
-    x = np.load(f"{track_id}/{track_id}_height_x_mm.npy")
-    y = np.load(f"{track_id}/{track_id}_height_y_mm.npy")
-    Z = np.load(f"{track_id}/{track_id}_height_detrended.npy")
+    x = np.load(_height_path(track_id, f"{track_id}_height_x_mm.npy"))
+    y = np.load(_height_path(track_id, f"{track_id}_height_y_mm.npy"))
+    Z = np.load(_height_path(track_id, f"{track_id}_height_detrended.npy"))
 
     half = window_mm / 2.0
     lo, hi = max(x_value - half, x.min()), min(x_value + half, x.max())
@@ -409,9 +435,9 @@ def extract_geometry_descriptors(track_id="Track_8", x_value=None, window_mm=DEF
 
     Returns a dict for a single location, or a pandas DataFrame for the whole track.
     """
-    x = np.load(f"{track_id}/{track_id}_height_x_mm.npy")
-    y = np.load(f"{track_id}/{track_id}_height_y_mm.npy")
-    Z = np.load(f"{track_id}/{track_id}_height_detrended.npy")
+    x = np.load(_height_path(track_id, f"{track_id}_height_x_mm.npy"))
+    y = np.load(_height_path(track_id, f"{track_id}_height_y_mm.npy"))
+    Z = np.load(_height_path(track_id, f"{track_id}_height_detrended.npy"))
 
     def descriptors_at(x0):
         idx = int(np.argmin(np.abs(x - x0)))
@@ -524,8 +550,8 @@ def _get_common_x_range(track_id="Track_8"):
     cover for this track, so a downstream loop never asks either loader for
     an x location that only exists in the other modality.
     """
-    x_thermal = np.load(f"{track_id}/{track_id}_x_mm_center.npy")
-    x_height = np.load(f"{track_id}/{track_id}_height_x_mm.npy")
+    x_thermal = np.load(_thermal_path(track_id, f"{track_id}_x_mm_center.npy"))
+    x_height = np.load(_height_path(track_id, f"{track_id}_height_x_mm.npy"))
 
     common_min = max(x_thermal.min(), x_height.min())
     common_max = min(x_thermal.max(), x_height.max())
@@ -635,9 +661,9 @@ def get_multimodal_bundle_for_track(track_id="Track_8", width_window_mm=1.0, ste
     df = pd.DataFrame(rows)
 
     if display:
-        x = np.load(f"{track_id}/{track_id}_height_x_mm.npy")
-        y = np.load(f"{track_id}/{track_id}_height_y_mm.npy")
-        Z = np.load(f"{track_id}/{track_id}_height_detrended.npy")
+        x = np.load(_height_path(track_id, f"{track_id}_height_x_mm.npy"))
+        y = np.load(_height_path(track_id, f"{track_id}_height_y_mm.npy"))
+        Z = np.load(_height_path(track_id, f"{track_id}_height_detrended.npy"))
         id_num = int(''.join(ch for ch in track_id if ch.isdigit()))
         vmin_um, vmax_um = HEIGHTMAP_RANGES_UM.get(id_num, (None, None))
 
@@ -692,11 +718,11 @@ class TrackData:
     """
     def __init__(self, track_id):
         self.track_id = track_id
-        self.x_thermal = np.load(f"{track_id}/{track_id}_x_mm_center.npy")
-        self.thermal_frames = np.load(f"{track_id}/{track_id}_thermal_frames.npy")
-        self.x_height = np.load(f"{track_id}/{track_id}_height_x_mm.npy")
-        self.y_height = np.load(f"{track_id}/{track_id}_height_y_mm.npy")
-        self.Z_height = np.load(f"{track_id}/{track_id}_height_detrended.npy")
+        self.x_thermal = np.load(_thermal_path(track_id, f"{track_id}_x_mm_center.npy"))
+        self.thermal_frames = np.load(_thermal_path(track_id, f"{track_id}_thermal_frames.npy"))
+        self.x_height = np.load(_height_path(track_id, f"{track_id}_height_x_mm.npy"))
+        self.y_height = np.load(_height_path(track_id, f"{track_id}_height_y_mm.npy"))
+        self.Z_height = np.load(_height_path(track_id, f"{track_id}_height_detrended.npy"))
 
         self.common_x_min = float(max(self.x_thermal.min(), self.x_height.min()))
         self.common_x_max = float(min(self.x_thermal.max(), self.x_height.max()))
@@ -895,4 +921,3 @@ def get_multimodal_bundle_at_x(x_value, track_id="Track_8", width_window_mm=1.0,
         plt.show()
 
     return bundle
-

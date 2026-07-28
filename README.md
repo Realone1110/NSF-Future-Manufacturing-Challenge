@@ -102,9 +102,7 @@ This matches the layout used by the organizer's starter repository at https://gi
 
 These folders hold the processed thermal and height data produced by running `02_starter_code_loading_and_visualization_standalone_colab.ipynb` on the raw dataset above. That output feeds into feature extraction and model training.
 
-We are not committing these folders to the repository and are adding them to `.gitignore` instead, since they're fully reproducible from the raw data plus that notebook, and keeping them out avoids bloating the repository with large derived files. Run the notebook once after downloading the raw data and it will regenerate all four folders locally.
-
-If you'd rather have these folders committed directly (for example so a reviewer can skip the regeneration step), that's a reasonable call too. Just remove those four lines from `.gitignore` and add the folders with `git add`.
+We are not committing these folders to the repository and are adding them to `.gitignore` instead. Some of the individual processed files run as large as 250 MB, well past GitHub's 100 MB per file limit, so pushing them directly isn't an option without setting up Git LFS. Regenerating them locally avoids that entirely. Run the notebook once after downloading the raw data and it will regenerate all four folders.
 
 ## Environment setup
 
@@ -123,7 +121,7 @@ The `requirements.txt` in this repository lists the packages we know the pipelin
 ## Reproducing the results
 
 1. Download the raw dataset from Zenodo and place it under `data/raw` using the layout shown above.
-2. Run `02_starter_code_loading_and_visualization_standalone_colab.ipynb` to generate the processed `Track_8`, `Track_10`, `Track_14`, and `Track_21` folders.
+2. Run `02_starter_code_loading_and_visualization_standalone_colab.ipynb` to generate the processed `Track_8`, `Track_10`, `Track_14`, and `Track_21` folders. This step produces both the thermal and height map data used downstream, saved into the same four folders.
 3. Run `Train_models.ipynb` to extract features and train the three GPR model families (width, boundary, contour descriptors). This writes trained models, prediction outputs, and figures to `ML_results/`.
 4. Run `Ablation studies.ipynb` to reproduce the feature ablation study and the kernel comparison experiments referenced in the report.
 5. `01_starter_code_loading_and_visualization.ipynb` is the organizer's original participant guide notebook, kept for reference and not required for reproducing our results.
