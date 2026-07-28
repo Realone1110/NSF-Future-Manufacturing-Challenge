@@ -1,0 +1,38 @@
+Width GPR results, generated 20260727_211322
+Trained on: ['Track_8', 'Track_10', 'Track_14']  (n=900)
+Validated on: ['Track_21']  (n=300)
+Kernel: 2.05**2 * Matern(length_scale=3.83, nu=1.5)
+
+MAE: 0.1195 mm
+NLL: -0.2174
+
+Calibration:
+ nominal_coverage  empirical_coverage
+             0.50            0.783333
+             0.80            0.946667
+             0.90            0.986667
+             0.95            0.996667
+
+Feature coverage (Track_21 vs training range):
+              feature    train_min   train_max  test_median  test_frac_outside_train_range
+        melt_area_mm2     0.658952   12.381712     0.407484                       1.000000
+linear_energy_density    20.000000   35.000000    40.000000                       1.000000
+      melt_tail_ratio     0.426057    1.933491     0.000000                       0.733333
+       melt_asymmetry     0.009811    0.616521     0.019169                       0.140000
+   cooling_rate_proxy -6141.748047 4816.655273  -192.925720                       0.040000
+             sem_mean    70.616280  204.792923   131.556068                       0.013333
+      sem_texture_std     4.564953   15.163377     9.422269                       0.010000
+            melt_peak  1421.359497 2863.382080  2026.659973                       0.003333
+            melt_mean  1258.595825 1721.735718  1504.631653                       0.003333
+      sem_texture_max    95.505234  180.045135   124.860924                       0.003333
+               x_frac     0.014147    0.991990     0.497406                       0.000000
+    melt_aspect_ratio     1.000660    3.370241     1.088515                       0.000000
+              sem_std     8.225703   69.858269    23.337300                       0.000000
+     sem_texture_mean     4.163352   20.596336    11.226951                       0.000000
+
+Timing:
+  data extraction: 1069.93s
+  model fitting: 19.96s
+  evaluation: 0.02s
+  figure generation: 3.13s
+  total: 1093.04s

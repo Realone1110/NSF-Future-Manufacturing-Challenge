@@ -1,0 +1,23 @@
+# Core scientific stack
+numpy>=1.24
+scipy>=1.10
+pandas>=1.5
+
+# Modeling
+scikit-learn>=1.3
+
+# Image and MAT/ASC file handling
+Pillow>=9.0
+h5py>=3.8
+
+# Plotting
+matplotlib>=3.6
+
+# Notebook environment
+jupyter>=1.0
+ipykernel>=6.0
+notebook>=6.5
+
+# Optional, only needed if you rerun the CNN baseline comparison
+# in the ablation notebook
+# torch>=2.0
