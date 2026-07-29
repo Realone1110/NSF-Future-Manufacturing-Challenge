@@ -109,7 +109,7 @@ We are not committing these folders to the repository and are adding them to `.g
 This project was built and tested with Python 3.10 or newer.
 
 ```bash
-git clone <your repository URL here>
+git clone [(https://github.com/Realone1110/NSF-Future-Manufacturing-Challenge)]
 cd <repository folder>
 python -m venv .venv
 source .venv/bin/activate      # on Windows use .venv\Scripts\activate
